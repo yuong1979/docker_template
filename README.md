@@ -128,3 +128,4 @@ On URL: http://127.0.0.1:8000/reviews - test send of email
 - `pip install django-celery-results`
 
 ### Original requirements.txt
+testing
