@@ -38,16 +38,16 @@ services:
             - pgdb
             - redis
 
-    celery_worker:
+    celery_worker_django:
 
         restart: always
         build: ./django
-        image: celery_worker
+        image: celery_worker_django
         command: celery -A core worker -B -l INFO # For deeper logs use DEBUG - combining worker with beat with -B
 
         volumes:
             - .:/usr/src/app/django_app
-        container_name: celery_container_worker  # Specify the name for the container
+        container_name: celery_django_container_worker  # Specify the name for the container
 
         environment:
             - DEBUG=1
@@ -66,11 +66,43 @@ services:
             - "5000:5000"
         image: flask
         container_name: flask_container
-        command: flask run --host=0.0.0.0 --port=5000
+        command: gunicorn --bind 0.0.0.0:5000 --workers 4 --threads 4 run:app
+        # command: flask run --host=0.0.0.0 --port=5000
 
         environment:
-            - FLASK_ENV=development
-            - FLASK_APP=app.py
+            # - FLASK_ENV=development
+            # - FLASK_APP=app.py
+            - CELERY_BROKER=redis://redis:6379/0
+            - CELERY_BACKEND=redis://redis:6379/0
+
+    celery_worker_flask:
+
+        restart: always
+        build: ./flask
+        image: celery_worker_flask
+        command: celery -A celery_worker.celery worker --loglevel=info --concurrency=2 # For deeper logs use DEBUG - combining worker with beat with -B
+
+        volumes:
+            - .:/usr/src/app/flask_app
+        container_name: celery_flask_container_worker  # Specify the name for the container
+
+        environment:
+            - CELERY_BROKER=redis://redis:6379/0
+            - CELERY_BACKEND=redis://redis:6379/0
+
+        depends_on:
+            - flask
+            - redis
+
+
+    # nginx:
+    #     build: .flask/nginx
+    #     ports:
+    #         - 1337:80
+    #     depends_on:
+    #         - flask
+
+
 
 
 volumes:
