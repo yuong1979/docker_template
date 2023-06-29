@@ -2,9 +2,13 @@ version: "3.10"
    
 services:
 
-    redis:
+    redis_django:
         image: redis:alpine
-        container_name: redis_container
+        container_name: redis_django_container
+
+    redis_flask:
+        image: redis:alpine
+        container_name: redis_flask_container
 
     pgdb:
         image: postgres
@@ -31,12 +35,12 @@ services:
 
         environment:
             - DEBUG=1
-            - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
-            - CELERY_BROKER=redis://redis:6379/0
-            - CELERY_BACKEND=redis://redis:6379/0
+            - DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1,[::1]
+            - CELERY_BROKER=redis://redis_django:6379/0
+            - CELERY_BACKEND=redis://redis_django:6379/0
         depends_on:
             - pgdb
-            - redis
+            - redis_django
 
     celery_worker_django:
 
@@ -51,12 +55,12 @@ services:
 
         environment:
             - DEBUG=1
-            - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
-            - CELERY_BROKER=redis://redis:6379/0
-            - CELERY_BACKEND=redis://redis:6379/0
+            - DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1,[::1]
+            - CELERY_BROKER=redis://redis_django:6379/0
+            - CELERY_BACKEND=redis://redis_django:6379/0
         depends_on:
             - django
-            - redis
+            - redis_django
 
     flask:
         build: ./flask
@@ -72,8 +76,8 @@ services:
         environment:
             # - FLASK_ENV=development
             # - FLASK_APP=app.py
-            - CELERY_BROKER=redis://redis:6379/0
-            - CELERY_BACKEND=redis://redis:6379/0
+            - CELERY_BROKER=redis://redis_flask:6379/0
+            - CELERY_BACKEND=redis://redis_flask:6379/0
 
     celery_worker_flask:
 
@@ -87,12 +91,11 @@ services:
         container_name: celery_flask_container_worker  # Specify the name for the container
 
         environment:
-            - CELERY_BROKER=redis://redis:6379/0
-            - CELERY_BACKEND=redis://redis:6379/0
-
+            - CELERY_BROKER=redis://redis_flask:6379/0
+            - CELERY_BACKEND=redis://redis_flask:6379/0
         depends_on:
             - flask
-            - redis
+            - redis_flask
 
 
     # nginx:
