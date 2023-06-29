@@ -1,7 +1,6 @@
 version: "3.10"
    
 services:
-
     redis_django:
         image: redis:alpine
         container_name: redis_django_container
@@ -12,15 +11,12 @@ services:
 
     pgdb:
         image: postgres
-
         volumes:
             - pgdata:/var/lib/postgresql/data/
-
         environment:
             - POSTGRES_DB=postgres
             - POSTGRES_USER=postgres
             - POSTGRES_PASSWORD=postgres
-
         container_name: pgdb_container
 
     django:
@@ -31,7 +27,8 @@ services:
             - "8000:8000"
         image: django  # Assign a name and tag to the built image
         container_name: django_container
-        command: python manage.py runserver 0.0.0.0:8000
+        # command: python manage.py runserver 0.0.0.0:8000
+        command: gunicorn --bind 0.0.0.0:8000 django_app.wsgi:application
 
         environment:
             - DEBUG=1
@@ -97,15 +94,13 @@ services:
             - flask
             - redis_flask
 
-
     # nginx:
-    #     build: .flask/nginx
+    #     build: ./nginx
     #     ports:
-    #         - 1337:80
+    #     - "80:80"
     #     depends_on:
-    #         - flask
-
-
+    #     - django
+    #     - flask
 
 
 volumes:
