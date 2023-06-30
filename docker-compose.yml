@@ -94,13 +94,13 @@ services:
             - flask
             - redis_flask
 
-    # nginx:
-    #     build: ./nginx
-    #     ports:
-    #     - "80:80"
-    #     depends_on:
-    #     - django
-    #     - flask
+    nginx:
+        build: ./nginx
+        ports:
+        - "80:80"
+        depends_on:
+        - django
+        - flask
 
 
 volumes:
