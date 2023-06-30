@@ -33,6 +33,10 @@ services:
         environment:
             - DEBUG=1
             - DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1,[::1]
+            - SECRET_KEY='DJANGO_SECRET_KEY'
+            - LOCAL_POSTGRES_USER=postgres
+            - LOCAL_POSTGRES_PASSWORD=postgres
+            - LOCAL_POSTGRES_HOST=postgres
             - CELERY_BROKER=redis://redis_django:6379/0
             - CELERY_BACKEND=redis://redis_django:6379/0
         depends_on:
@@ -105,5 +109,3 @@ services:
 
 volumes:
     pgdata:
-
-
