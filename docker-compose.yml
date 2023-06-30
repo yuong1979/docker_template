@@ -28,7 +28,7 @@ services:
         image: django  # Assign a name and tag to the built image
         container_name: django_container
         # command: python manage.py runserver 0.0.0.0:8000
-        command: gunicorn --bind 0.0.0.0:8000 django_app.wsgi:application
+        command: gunicorn core.wsgi:application --bind 0.0.0.0:8000
 
         environment:
             - DEBUG=1
@@ -94,13 +94,13 @@ services:
             - flask
             - redis_flask
 
-    # nginx:
-    #     build: ./nginx
-    #     ports:
-    #     - "80:80"
-    #     depends_on:
-    #     - django
-    #     - flask
+    nginx:
+        build: ./nginx
+        ports:
+        - "80:80"
+        depends_on:
+        - django
+        - flask
 
 
 volumes:
