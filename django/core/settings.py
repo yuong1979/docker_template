@@ -28,12 +28,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
-
+if os.environ.get('DEBUG')=='1':
+    DEBUG = True
+else:
+    DEBUG = False
 
 if not DEBUG:
     #converting string to list    
-    ALLOWED_HOSTS = ast.literal_eval(os.environ.get('ALLOWED_HOSTS'))
+    ALLOWED_HOSTS = ['*']
 else:
     ALLOWED_HOSTS = ['*']
 
@@ -120,17 +122,10 @@ else:
             'NAME': os.environ.get('LOCAL_POSTGRES_NAME'),
             'USER': os.environ.get('LOCAL_POSTGRES_USER'),
             'PASSWORD': os.environ.get('LOCAL_POSTGRES_PASSWORD'), # Use "postgres" when you are using docker or "qwer1234" when local
-            'HOST': 'localhost',  # Use "pgdb" when you are using docker or "localhost" when local
+            'HOST': os.environ.get('LOCAL_POSTGRES_HOST'), #'localhost',  # Use "pgdb" when you are using docker or "localhost" when local
             'PORT': '5432',  # Or your database server port
         }
     }
-
-
-
-
-
-
-
 
 
 # Password validation
