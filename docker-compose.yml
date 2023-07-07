@@ -81,7 +81,7 @@ services:
         restart: always
         build: ./flask
         image: celery_worker_flask
-        command: celery -A celery_worker.celery worker --loglevel=info --concurrency=2 # For deeper logs use DEBUG - combining worker with beat with -B
+        command: celery -A celery_worker.celery worker --loglevel=info -B --concurrency=2 # For deeper logs use DEBUG - combining worker with beat with -B
 
         volumes:
             - .:/usr/src/app/flask_app
